@@ -75,6 +75,14 @@ export const AuthProvider = ({ children }) => {
     setDarkMode(prev => !prev);
   };
 
+  const updateUser = (updatedUserData) => {
+    setUser(prev => {
+      const merged = { ...prev, ...updatedUserData };
+      localStorage.setItem('user', JSON.stringify(merged));
+      return merged;
+    });
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -85,9 +93,11 @@ export const AuthProvider = ({ children }) => {
       login,
       register,
       logout,
+      updateUser,
       isAuthenticated: !!token,
       isAdmin: user?.role === 'admin'
     }}>
+
       {children}
     </AuthContext.Provider>
   );

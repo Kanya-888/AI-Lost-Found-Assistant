@@ -22,9 +22,13 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: list[str] = [
         "http://localhost:5173",
+        "http://localhost:5174",
         "http://localhost:3000",
-        "http://127.0.0.1:5173"
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        "*"
     ]
+
     
     # Email SMTP (Gmail)
     SMTP_HOST: str = "smtp.gmail.com"

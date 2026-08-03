@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react_router_dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Sparkles, Search, PlusCircle, History, User, LogOut, 
   Sun, Moon, Shield, Menu, X, LayoutDashboard 
@@ -102,6 +102,18 @@ export const Navbar = () => {
                 FAISS Search
               </Link>
 
+              <Link
+                to="/profile"
+                className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 ${
+                  isActive('/profile') 
+                    ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 font-semibold' 
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                }`}
+              >
+                <User className="w-4 h-4 text-blue-500" />
+                Profile
+              </Link>
+
               {isAdmin && (
                 <Link
                   to="/admin"
@@ -116,6 +128,7 @@ export const Navbar = () => {
                 </Link>
               )}
             </div>
+
           )}
 
           {/* Right Action Icons & Profile */}
@@ -218,6 +231,13 @@ export const Navbar = () => {
           >
             Vector Search
           </Link>
+          <Link
+            to="/profile"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2.5 rounded-xl text-base font-medium text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40"
+          >
+            My Profile & Settings
+          </Link>
           {isAdmin && (
             <Link
               to="/admin"
@@ -232,3 +252,4 @@ export const Navbar = () => {
     </nav>
   );
 };
+

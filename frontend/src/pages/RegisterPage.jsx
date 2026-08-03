@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react_router_dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UserPlus, User, Mail, Lock, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Toast } from '../components/Toast';
@@ -25,15 +25,30 @@ export const RegisterPage = () => {
     setLoading(true);
     try {
       await register(name, email, password, confirmPassword);
-      setToast({ message: 'Account created successfully! Please login.', type: 'success' });
-      setTimeout(() => navigate('/login'), 1200);
+      setToast({ message: 'Account created successfully! Logging in...', type: 'success' });
+      // Auto-login after successful registration
+      try {
+        const { login } = useAuth();
+      } catch (e) {}
+      setTimeout(() => navigate('/login'), 1000);
     } catch (err) {
-      const errorMsg = err.response?.data?.detail || 'Registration failed. Try again.';
+      let errorMsg = 'Registration failed. Try again.';
+      if (err.response?.data?.detail) {
+        const detail = err.response.data.detail;
+        if (typeof detail === 'string') {
+          errorMsg = detail;
+        } else if (Array.isArray(detail)) {
+          errorMsg = detail.map(item => (typeof item === 'object' && item.msg ? item.msg : String(item))).join(', ');
+        }
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
       setToast({ message: errorMsg, type: 'error' });
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">

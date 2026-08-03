@@ -7,9 +7,14 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
 export const ProfilePage = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Profile details state
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [profileLoading, setProfileLoading] = useState(false);
 
   // Password change state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -23,6 +28,13 @@ export const ProfilePage = () => {
     fetchProfile();
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setEmail(user.email || '');
+    }
+  }, [user]);
+
   const fetchProfile = async () => {
     try {
       const res = await api.get('/api/profile');
@@ -31,6 +43,30 @@ export const ProfilePage = () => {
       setToast({ message: 'Failed to load profile details', type: 'error' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    if (!name.trim() || !email.trim()) {
+      setToast({ message: 'Name and email cannot be empty', type: 'error' });
+      return;
+    }
+
+    setProfileLoading(true);
+    try {
+      const res = await api.put('/api/profile', { name: name.trim(), email: email.trim().toLowerCase() });
+      updateUser(res.data);
+      setToast({ message: 'Profile updated successfully!', type: 'success' });
+    } catch (err) {
+      let errorMsg = 'Failed to update profile';
+      if (err.response?.data?.detail) {
+        const detail = err.response.data.detail;
+        errorMsg = typeof detail === 'string' ? detail : (Array.isArray(detail) ? detail.map(d => d.msg || d).join(', ') : errorMsg);
+      }
+      setToast({ message: errorMsg, type: 'error' });
+    } finally {
+      setProfileLoading(false);
     }
   };
 
@@ -54,6 +90,7 @@ export const ProfilePage = () => {
       setPwdLoading(false);
     }
   };
+
 
   return (
     <div className="flex gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -91,51 +128,101 @@ export const ProfilePage = () => {
           </button>
         </div>
 
-        {/* Change Password Form & Profile Settings Grid */}
+        {/* Settings Column & User Reports Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          <div className="glass-panel rounded-3xl p-6 space-y-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <KeyRound className="w-5 h-5 text-blue-600" />
-              Change Password
-            </h3>
+          <div className="space-y-6">
+            {/* Edit Profile Details Card */}
+            <div className="glass-panel rounded-3xl p-6 space-y-4 shadow-lg">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <User className="w-5 h-5 text-blue-600" />
+                Edit Profile Details
+              </h3>
 
-            <form onSubmit={handlePasswordChange} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  required
-                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-              </div>
+              <form onSubmit={handleProfileUpdate} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    placeholder="John Doe"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-              </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    placeholder="john@example.com"
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
 
-              <button
-                type="submit"
-                disabled={pwdLoading}
-                className="w-full py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all text-xs disabled:opacity-50"
-              >
-                {pwdLoading ? 'Updating Password...' : 'Update Password'}
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={profileLoading}
+                  className="w-full py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-500/20"
+                >
+                  {profileLoading ? 'Saving Profile...' : 'Save Profile Changes'}
+                </button>
+              </form>
+            </div>
+
+            {/* Change Password Form */}
+            <div className="glass-panel rounded-3xl p-6 space-y-4 shadow-lg">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <KeyRound className="w-5 h-5 text-blue-600" />
+                Change Password
+              </h3>
+
+              <form onSubmit={handlePasswordChange} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    required
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={pwdLoading}
+                  className="w-full py-3 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all text-xs disabled:opacity-50 shadow-md shadow-blue-500/20"
+                >
+                  {pwdLoading ? 'Updating Password...' : 'Update Password'}
+                </button>
+              </form>
+            </div>
           </div>
+
 
           {/* User's Reports Feed */}
           <div className="lg:col-span-2 space-y-6">

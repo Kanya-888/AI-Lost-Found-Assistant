@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
@@ -33,9 +33,17 @@ def update_profile(
 ):
     """Update profile details (name/email)."""
     if payload.name:
-        current_user.name = payload.name
+        current_user.name = payload.name.strip()
     if payload.email:
-        current_user.email = payload.email
+        clean_email = payload.email.strip().lower()
+        existing = db.query(User).filter(User.email == clean_email, User.id != current_user.id).first()
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email address is already in use by another account"
+            )
+        current_user.email = clean_email
     db.commit()
     db.refresh(current_user)
     return current_user
+

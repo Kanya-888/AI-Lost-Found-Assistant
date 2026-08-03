@@ -1,9 +1,11 @@
 import os
 import smtplib
+from typing import Any
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from jinja2 import Template
 from backend.config import settings
+
 
 class EmailService:
     """Service for rendering and delivering HTML emails via Gmail SMTP."""

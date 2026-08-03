@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react_router_dom';
+import { useNavigate } from 'react-router-dom';
 import { Sidebar } from '../components/Sidebar';
 import { ImageUploader } from '../components/ImageUploader';
 import { Toast } from '../components/Toast';

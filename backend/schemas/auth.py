@@ -2,16 +2,11 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 
 class RegisterRequest(BaseModel):
     """Payload for user registration."""
-    name: str = Field(..., min_length=2, max_length=100, example="John Doe")
+    name: str = Field(..., min_length=1, max_length=100, example="John Doe")
     email: EmailStr = Field(..., example="john@example.com")
-    password: str = Field(..., min_length=6, max_length=100, example="secret123")
-    confirm_password: str = Field(..., min_length=6, max_length=100, example="secret123")
+    password: str = Field(..., min_length=4, max_length=100, example="secret123")
+    confirm_password: str | None = None
 
-    @field_validator("confirm_password")
-    def passwords_match(cls, v, values):
-        if "password" in values.data and v != values.data["password"]:
-            raise ValueError("Passwords do not match")
-        return v
 
 class LoginRequest(BaseModel):
     """Payload for user login."""

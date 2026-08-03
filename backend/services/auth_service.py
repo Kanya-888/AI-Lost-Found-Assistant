@@ -10,7 +10,8 @@ class AuthService:
     @staticmethod
     def register_user(db: Session, request: RegisterRequest) -> User:
         """Register a new user after validating email uniqueness."""
-        existing_user = db.query(User).filter(User.email == request.email).first()
+        clean_email = request.email.strip().lower()
+        existing_user = db.query(User).filter(User.email == clean_email).first()
         if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -19,8 +20,8 @@ class AuthService:
 
         hashed = hash_password(request.password)
         new_user = User(
-            name=request.name,
-            email=request.email,
+            name=request.name.strip(),
+            email=clean_email,
             hashed_password=hashed,
             role="user"
         )
@@ -32,13 +33,15 @@ class AuthService:
     @staticmethod
     def authenticate_user(db: Session, request: LoginRequest) -> Token:
         """Authenticate user credentials and issue JWT token."""
-        user = db.query(User).filter(User.email == request.email).first()
+        clean_email = request.email.strip().lower()
+        user = db.query(User).filter(User.email == clean_email).first()
         if not user or not verify_password(request.password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+
 
         if not user.is_active:
             raise HTTPException(

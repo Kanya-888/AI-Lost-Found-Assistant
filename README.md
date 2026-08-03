@@ -1,25 +1,27 @@
 # 🔍 AI Lost & Found Assistant
 
-A production-grade, full-stack **AI Lost & Found Assistant** platform that leverages Artificial Intelligence to compare text descriptions and uploaded item photos. Instead of simple keyword matching, the system uses deep vector similarity and high-dimensional nearest-neighbor indexing to reunite owners with their lost belongings.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python: 3.12+](https://img.shields.io/badge/Python-3.12%2B-blue.svg)](https://www.python.org/)
+[![FastAPI: 0.110.0](https://img.shields.io/badge/FastAPI-0.110.0-emerald.svg)](https://fastapi.tiangolo.com/)
+[![React: 18.2](https://img.shields.io/badge/React-18.2-cyan.svg)](https://react.dev/)
+[![Vite: 5.4](https://img.shields.io/badge/Vite-5.4-purple.svg)](https://vitejs.dev/)
+[![TailwindCSS: 3.4](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8.svg)](https://tailwindcss.com/)
+[![FAISS: Vector Search](https://img.shields.io/badge/FAISS-Vector%20Search-orange.svg)](https://github.com/facebookresearch/faiss)
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![Python](https://img.shields.io/badge/Python-3.12-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.110.0-emerald.svg)
-![React](https://img.shields.io/badge/React-18.2-cyan.svg)
-![Vite](https://img.shields.io/badge/Vite-5.1-purple.svg)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8.svg)
-![FAISS](https://img.shields.io/badge/FAISS-Vector%20Search-orange.svg)
+A production-grade, full-stack **AI Lost & Found Assistant** platform created by **Palvadi Kanya Kusuma Priya**. The system leverages Artificial Intelligence to compare text descriptions and uploaded item photos. Instead of simple keyword matching, the system uses deep vector similarity and high-dimensional nearest-neighbor indexing to reunite owners with their lost belongings.
+
+🔗 **GitHub Repository**: [https://github.com/Kanya-888/AI-Lost-Found-Assistant](https://github.com/Kanya-888/AI-Lost-Found-Assistant)
 
 ---
 
 ## 🌟 Key Features
 
-- **User Authentication & Authorization**: Secure JWT authentication, password hashing with bcrypt, session persistence, and role-based access control (User & Admin).
+- **User Authentication & Authorization**: Secure JWT authentication, password hashing with bcrypt, session persistence, case-insensitive email normalization, and role-based access control (`User` & `Admin`).
 - **AI Matching Engine**:
   - **Text Embeddings**: Uses `SentenceTransformers` (`all-MiniLM-L6-v2`) to extract 384-dimensional semantic text vectors.
   - **Image Embeddings**: Uses `OpenCLIP` (`ViT-B/32`) to extract 512-dimensional visual feature vectors.
   - **Vector Search Engine**: High-performance nearest-neighbor lookup powered by **FAISS**.
-  - **Automatic Match Thresholding**: Calculates combined cosine confidence (50% Text + 50% Image). Matches with >80% confidence trigger automated email notifications.
+  - **Automatic Match Thresholding**: Calculates combined cosine confidence (50% Text + 50% Image). Matches with &ge; 80% confidence trigger automated email notifications.
 - **Automated Email Notifications**: Renders responsive HTML email templates with item previews, photos, and collection location details sent via Gmail SMTP.
 - **Interactive Dashboards**:
   - **User Dashboard**: Real-time analytics, status counters (Lost, Found, Matched, Pending), and activity feeds.
@@ -64,27 +66,28 @@ A production-grade, full-stack **AI Lost & Found Assistant** platform that lever
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.12+
+- Python 3.10+ (Python 3.12 recommended)
 - Node.js 18+ and npm
 
-### 1. Backend Setup
-```bash
-# Navigate to backend folder
-cd backend
+### 1. Backend Setup (FastAPI)
+```powershell
+# Navigate to project root
+cd "c:\Users\User\Desktop\Ai Lost and found assistant"
 
 # Install Python requirements
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 
 # Start FastAPI development server
 python -m uvicorn backend.main:app --reload --port 8000
 ```
-- Interactive API Docs: [http://localhost:8000/docs](http://localhost:8000/docs)
-- Default Admin Credentials: `admin@example.com` / `admin123`
+- **Backend API**: [http://localhost:8000](http://localhost:8000)
+- **Interactive API Docs (Swagger UI)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Default Admin Account**: `palvadikanyakusuma@gmail.com` / `admin123`
 
-### 2. Frontend Setup
-```bash
+### 2. Frontend Setup (React + Vite)
+```powershell
 # Navigate to frontend folder
-cd frontend
+cd "c:\Users\User\Desktop\Ai Lost and found assistant\frontend"
 
 # Install node dependencies
 npm install
@@ -92,7 +95,7 @@ npm install
 # Start Vite dev server
 npm run dev
 ```
-- Open application at: [http://localhost:5173](http://localhost:5173)
+- Open application at: [http://localhost:5174](http://localhost:5174) or [http://localhost:5173](http://localhost:5173)
 
 ---
 
@@ -113,4 +116,4 @@ MATCH_THRESHOLD=0.80
 
 ## 📜 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. Created by **Palvadi Kanya Kusuma Priya**.

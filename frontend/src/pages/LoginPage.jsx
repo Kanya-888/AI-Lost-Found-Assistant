@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react_router_dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LogIn, Mail, Lock, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Toast } from '../components/Toast';
@@ -26,8 +26,31 @@ export const LoginPage = () => {
       setToast({ message: 'Logged in successfully!', type: 'success' });
       setTimeout(() => navigate('/dashboard'), 500);
     } catch (err) {
-      const errorMsg = err.response?.data?.detail || 'Invalid email or password';
+      let errorMsg = 'Invalid email or password';
+      if (err.response?.data?.detail) {
+        const detail = err.response.data.detail;
+        if (typeof detail === 'string') {
+          errorMsg = detail;
+        } else if (Array.isArray(detail)) {
+          errorMsg = detail.map(item => item.msg || item).join(', ');
+        }
+      }
       setToast({ message: errorMsg, type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickLogin = async (demoEmail, demoPassword) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setLoading(true);
+    try {
+      await login(demoEmail, demoPassword);
+      setToast({ message: `Logged in as ${demoEmail}!`, type: 'success' });
+      setTimeout(() => navigate('/dashboard'), 500);
+    } catch (err) {
+      setToast({ message: 'Login failed. Please try again.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -97,7 +120,32 @@ export const LoginPage = () => {
           </button>
         </form>
 
-        <div className="text-center pt-4 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500">
+        {/* 1-Click Quick Demo Login */}
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+          <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-center">
+            ⚡ One-Click Instant Sign In
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => handleQuickLogin('palvadikanyakusuma@gmail.com', 'admin123')}
+              className="py-2.5 px-3 rounded-xl text-xs font-bold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200/60 dark:border-purple-800/60 flex items-center justify-center gap-1.5 transition-all shadow-sm"
+            >
+              <span>👤 Kanya Login</span>
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() => handleQuickLogin('user@example.com', 'user123')}
+              className="py-2.5 px-3 rounded-xl text-xs font-bold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200/60 dark:border-blue-800/60 flex items-center justify-center gap-1.5 transition-all shadow-sm"
+            >
+              <span>👤 User Login</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="text-center pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500">
           Don't have an account?{' '}
           <Link to="/register" className="font-bold text-blue-600 hover:underline">
             Register here
@@ -107,3 +155,4 @@ export const LoginPage = () => {
     </div>
   );
 };
+
